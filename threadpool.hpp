@@ -2,6 +2,9 @@
 #define THREADPOOL_H
 #include <pthread.h>
 #include <stdbool.h>
+#include <iostream>
+#include <queue>
+#include <vector>
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,20 +12,28 @@ extern "C" {
 
 typedef void (*thread_func_t)(void *arg);
 
-typedef struct ThreadPool_work_t {
+typedef struct {
+    int size;
+    std::string filename;
+    // Something else
+} ThreadPool_args;
+
+typedef struct ThreadPool_work_t { // This is structure of a task that goes into the PQ
     thread_func_t func;              // The function pointer
-    void *arg;                       // The arguments for the function
-    // TODO: Add other members here if needed
+    ThreadPool_args arg;                       // The arguments for the function
+    bool operator<(const ThreadPool_work_t& other){ // Comparator
+        // Return true if other is less than this
+        return arg.size > other.arg.size;
+    }
 } ThreadPool_work_t;
 
-typedef struct {
-    // TODO: Add members here
+typedef struct {  // Priority queue for the tasks
+    std::priority_queue<ThreadPool_work_t> max_heap;
 } ThreadPool_work_queue_t;
 
-typedef struct {
-    pthread_t* threads;
-    ThreadPool_work_queue_t queue;
-    // TODO: Add members here
+typedef struct ThreadPool_t{ // This holds the idle threads
+    std::vector<pthread_t> threads;
+    ThreadPool_work_queue_t queue; // Priority Queue of items
 } ThreadPool_t;
 
 
@@ -33,7 +44,7 @@ typedef struct {
 * Return:
 *     ThreadPool_t* - The pointer to the newly created ThreadPool object
 */
-ThreadPool_t *ThreadPool_create(int num);
+void ThreadPool_create(ThreadPool_t& pool, int num);
 
 /**
 * A C style destructor to destroy a ThreadPool object

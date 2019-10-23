@@ -11,7 +11,19 @@ void MR_Run(int num_files, char *filenames[],
             Mapper map, int num_mappers,
             Reducer concate, int num_reducers) {
 
-            }
+    // Create the threadpool
+    ThreadPool_t map_pool;
+    ThreadPool_t reduce_pool;
+    ThreadPool_create(map_pool, num_mappers);
+    ThreadPool_create(reduce_pool, num_reducers);
+
+    // Main Thread will add jobs to the queue for the mappers
+
+
+
+
+
+}
 
 void MR_Emit(char *key, char *value) {
 

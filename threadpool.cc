@@ -1,9 +1,30 @@
 #include "threadpool.hpp"
 #include <assert.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+
+/**
+* A C style constructor for creating a new ThreadPool object
+* Parameters:
+*     num - The number of threads to create
+* Return:
+*     ThreadPool_t* - The pointer to the newly created ThreadPool object
+*/
+typedef void* (*temp)(void *);
+void ThreadPool_create(ThreadPool_t &pool, int num) { // Expects an empty pool
+    // Create the thread pool of size num
+    // The pool should also have locks for the
+    pool.threads.resize(num);
+    // Run the threads to do the cool stuff
+    for (int i = 0; i < num; i++) {
+        pthread_create( &pool.threads[i], NULL, [](void * tp) -> void * {
+            Thread_run((ThreadPool_t *)tp);
+            }, &pool);
+    }
+}
 
 void ThreadPool_destroy(ThreadPool_t *tp) {
 
@@ -40,5 +61,5 @@ ThreadPool_work_t *ThreadPool_get_work(ThreadPool_t *tp) {
 *     tp - The ThreadPool Object this thread belongs to
 */
 void *Thread_run(ThreadPool_t *tp) {
-
+    std::cout << "RUNNING SOME THREADS"<< "\n";
 }

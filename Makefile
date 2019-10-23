@@ -12,4 +12,4 @@ clean:
 	rm wc
 
 compress:
-	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc Makefile 
+	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc mapreduce.hpp threadpool.hpp wordcount Makefile
