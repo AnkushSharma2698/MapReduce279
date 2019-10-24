@@ -22,9 +22,9 @@ void Map(char *file_name) {
 }
 
 void Reduce(char *key, int partition_number) {
-    
     int count = 0;
     char *value, name[100];
+    // Requires sorting to be implemented
     while ((value = MR_GetNext(key, partition_number)) != NULL)
         count++;
     sprintf(name, "result-%d.txt", partition_number);
