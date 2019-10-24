@@ -41,6 +41,11 @@ void ThreadPool_destroy(ThreadPool_t *tp) {
 *     false - Otherwise
 */
 bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
+    ThreadPool_args * args = (ThreadPool_args *) arg;
+    ThreadPool_work_t work_item;
+    work_item.func = func;
+    work_item.arg = *args;
+//    tp->queue.max_heap.push(work_item);
     // Create the item first x = item
     // Put a mutex lock here so when we get here the only one who can access the queue will be the current thread
     //Add in item to the queue

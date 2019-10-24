@@ -2,6 +2,7 @@
 #include "threadpool.hpp"
 #include <assert.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
@@ -10,16 +11,23 @@
 void MR_Run(int num_files, char *filenames[],
             Mapper map, int num_mappers,
             Reducer concate, int num_reducers) {
-
     // Create the threadpool
     ThreadPool_t map_pool;
     ThreadPool_t reduce_pool;
     ThreadPool_create(map_pool, num_mappers);
     // Main Thread will add jobs to the queue for the mappers
-//    for (int i = 0; i < num_files; i++) {
-//      In the main thread just loop and create all of the jobs that will be needed
-//        ThreadPool_add_work(map_pool, (thread_func_t *) map, )
-//    }
+    for (int i = 0; i < num_files; i++) {
+        // Get the size of the file we are looking at
+        struct stat st;
+        stat(filenames[i], &st);
+        // Build the args for the MR
+        ThreadPool_args arg;
+        arg.filename = filenames[i];
+        arg.size = st.st_size;
+
+        // Add work item to the priority queue
+        ThreadPool_add_work(&map_pool, (thread_func_t) map, &arg);
+    }
     // Wait until all map threads complete & then destroy the map pool
 
 

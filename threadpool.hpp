@@ -12,7 +12,7 @@ extern "C" {
 
 typedef void (*thread_func_t)(void *arg);
 
-typedef struct {
+typedef struct ThreadPool_args{
     int size;
     std::string filename;
     // Something else
@@ -23,7 +23,7 @@ typedef struct ThreadPool_work_t { // This is structure of a task that goes into
     ThreadPool_args arg;                       // The arguments for the function
     bool operator<(const ThreadPool_work_t& other){ // Comparator
         // Return true if other is less than this
-        return arg.size > other.arg.size;
+        return arg.size < other.arg.size;
     }
 } ThreadPool_work_t;
 
