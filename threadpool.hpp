@@ -79,7 +79,7 @@ class ReduceQueue: public DataStructure {
 
 typedef struct {  // Priority queue for the tasks
     // std::priority_queue<ThreadPool_work_t> max_heap;
-    DataStructure ds;
+    DataStructure *ds;
 } ThreadPool_work_queue_t;
 
 typedef struct ThreadPool_t{ // This holds the idle threads

@@ -46,7 +46,7 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
     ThreadPool_work_t work_item;
     work_item.func = func;
     work_item.arg = *args;
-    *tp->queue.ds.add_item(work_item);
+    tp->queue.ds->add_item(work_item);
     // tp->queue.max_heap.push(work_item);
     // std::cout << "SIZE: " << tp->queue.max_heap.size() << '\n';
     // std::cout << tp->queue.max_heap.top().arg.filename << "\n";

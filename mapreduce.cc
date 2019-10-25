@@ -13,8 +13,7 @@ void MR_Run(int num_files, char *filenames[],
             Reducer concate, int num_reducers) {
     // Create the threadpool
     ThreadPool_t map_pool;
-    MapQueue q;
-    map_pool.queue.ds = q;
+    map_pool.queue.ds = new MapQueue();
     // Main Thread will add jobs to the queue for the mappers
     for (int i = 0; i < num_files; i++) {
         // Get the size of the file we are looking at
@@ -36,6 +35,8 @@ void MR_Run(int num_files, char *filenames[],
     // ThreadPool_create(reduce_pool, num_reducers);
     // Wait for all reduce threads to complete
     // Destory the reduce pool
+
+    //TODO free the shit
 
 }
 
