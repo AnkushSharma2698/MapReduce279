@@ -13,7 +13,8 @@ void MR_Run(int num_files, char *filenames[],
             Reducer concate, int num_reducers) {
     // Create the threadpool
     ThreadPool_t map_pool;
-    ThreadPool_t reduce_pool;
+    MapQueue q;
+    map_pool.queue.ds = q;
     // Main Thread will add jobs to the queue for the mappers
     for (int i = 0; i < num_files; i++) {
         // Get the size of the file we are looking at
@@ -27,14 +28,15 @@ void MR_Run(int num_files, char *filenames[],
         // Add work item to the priority queue
         ThreadPool_add_work(&map_pool, (thread_func_t) map, &arg);
     }
-    ThreadPool_create(map_pool, num_mappers);
+    // ThreadPool_create(map_pool, num_mappers);
+
     // Wait until all map threads complete & then destroy the map pool
-
-
     // Create R reduce threads, each thread processes a given partition
+    // ThreadPool_t reduce_pool;
     // ThreadPool_create(reduce_pool, num_reducers);
     // Wait for all reduce threads to complete
     // Destory the reduce pool
+
 }
 
 void MR_Emit(char *key, char *value) {

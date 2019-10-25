@@ -41,13 +41,15 @@ void ThreadPool_destroy(ThreadPool_t *tp) {
 *     false - Otherwise
 */
 bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
+
     ThreadPool_args * args = (ThreadPool_args *) arg;
     ThreadPool_work_t work_item;
     work_item.func = func;
     work_item.arg = *args;
-    tp->queue.max_heap.push(work_item);
-//    std::cout << "SIZE: " << tp->queue.max_heap.size() << '\n';
-//    std::cout << tp->queue.max_heap.top().arg.filename << "\n";
+    *tp->queue.ds.add_item(work_item);
+    // tp->queue.max_heap.push(work_item);
+    // std::cout << "SIZE: " << tp->queue.max_heap.size() << '\n';
+    // std::cout << tp->queue.max_heap.top().arg.filename << "\n";
     // Create the item first x = item
     // Put a mutex lock here so when we get here the only one who can access the queue will be the current thread
     //Add in item to the queue
@@ -76,7 +78,9 @@ ThreadPool_work_t *ThreadPool_get_work(ThreadPool_t *tp) {
 void *Thread_run(ThreadPool_t *tp) {
     // Running the thread loop here
     while (true) {
-
+        // pthread_mutex_lock(*tp.mutex);
+        
+        // Wait on the conditions that the data structure is empty and !pool
     }
     std::cout << "RUNNING SOME THREADS"<< "\n";
 }

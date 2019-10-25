@@ -27,18 +27,67 @@ typedef struct ThreadPool_work_t { // This is structure of a task that goes into
     }
 } ThreadPool_work_t;
 
+// Create 2 data structures
+class DataStructure {
+    public:
+        void add_item(ThreadPool_work_t &item);
+        void * get_item();
+        bool isEmpty();
+};
+
+class MapQueue: public DataStructure {
+    private:
+        std::priority_queue<ThreadPool_work_t> max_heap;
+    public:
+        void add_item(ThreadPool_work_t &item) {
+            max_heap.push(item);
+            // free(work_item);
+        }
+
+        void * get_item() {
+            // return max_heap.pop();
+            return NULL;
+        }
+
+        bool isEmpty() {
+            return max_heap.empty();
+        }
+};
+
+// // This class will hold a single index of the partitions and handle their processing
+class ReduceQueue: public DataStructure {
+    private:
+        std::vector<ThreadPool_work_t> partition;
+    public:
+        ReduceQueue(std::vector<ThreadPool_work_t> single_part_of_partition) {
+            partition = single_part_of_partition;
+        }
+        void add_item(void * item) {
+            ThreadPool_work_t * work_item = (ThreadPool_work_t *) item;
+            partition.push_back(*work_item);
+        }
+
+        void * get_item() {
+            return NULL;
+        }
+
+        bool isEmpty() {
+            return partition.size() == 0;
+        }
+
+}; 
+
 typedef struct {  // Priority queue for the tasks
-    std::priority_queue<ThreadPool_work_t> max_heap;
+    // std::priority_queue<ThreadPool_work_t> max_heap;
+    DataStructure ds;
 } ThreadPool_work_queue_t;
 
 typedef struct ThreadPool_t{ // This holds the idle threads
     std::vector<pthread_t> threads; // Vector of the threads of Either Map or Reduce
     ThreadPool_work_queue_t queue; // Priority Queue of items
-    pthread_mutex_t job_mutex; // Want to make sure only one lock exists for the whole pool
-    pthread_mutex_t partition_mutex;
+    pthread_mutex_t mutex; // Want to make sure only one lock exists for the whole pool
     pthread_cond_t cond; // This is used as a conditional variable in the threadpool
 } ThreadPool_t;
-
 
 /**
 * A C style constructor for creating a new ThreadPool object
