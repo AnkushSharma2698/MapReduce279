@@ -11,7 +11,7 @@
 void MR_Run(int num_files, char *filenames[],
             Mapper map, int num_mappers,
             Reducer concate, int num_reducers) {
-    // Create the threadpool
+    // Create the threadpool with the appropriate data structure needed
     ThreadPool_t map_pool;
     map_pool.queue.ds = new MapQueue();
     // Main Thread will add jobs to the queue for the mappers
@@ -27,7 +27,9 @@ void MR_Run(int num_files, char *filenames[],
         // Add work item to the priority queue
         ThreadPool_add_work(&map_pool, (thread_func_t) map, &arg);
     }
-    // ThreadPool_create(map_pool, num_mappers);
+
+    // std::cout << "Total files added: " << map_pool.queue.ds->getSize() << "\n";
+    ThreadPool_create(map_pool, num_mappers);
 
     // Wait until all map threads complete & then destroy the map pool
     // Create R reduce threads, each thread processes a given partition

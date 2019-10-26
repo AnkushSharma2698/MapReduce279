@@ -30,9 +30,20 @@ typedef struct ThreadPool_work_t { // This is structure of a task that goes into
 // Create 2 data structures
 class DataStructure {
     public:
-        void add_item(ThreadPool_work_t &item);
-        void * get_item();
-        bool isEmpty();
+        virtual void add_item(ThreadPool_work_t &item) {
+            
+        }
+        virtual ThreadPool_work_t get_item() {
+            ThreadPool_work_t a;
+            return a;
+        }
+        virtual bool isEmpty() {
+            return false;
+        }
+        virtual int getSize() {
+            return 0;
+        }
+        virtual void viewTop(){}
 };
 
 class MapQueue: public DataStructure {
@@ -44,9 +55,19 @@ class MapQueue: public DataStructure {
             // free(work_item);
         }
 
-        void * get_item() {
+        ThreadPool_work_t get_item() {
             // return max_heap.pop();
-            return NULL;
+            ThreadPool_work_t item =  max_heap.top();
+            max_heap.pop();
+            return item;
+        }
+
+        void viewTop() {
+            std::cout << max_heap.top().arg.filename << '\n';
+        }
+
+        int getSize() {
+            return max_heap.size();
         }
 
         bool isEmpty() {
@@ -54,39 +75,41 @@ class MapQueue: public DataStructure {
         }
 };
 
-// // This class will hold a single index of the partitions and handle their processing
-class ReduceQueue: public DataStructure {
-    private:
-        std::vector<ThreadPool_work_t> partition;
-    public:
-        ReduceQueue(std::vector<ThreadPool_work_t> single_part_of_partition) {
-            partition = single_part_of_partition;
-        }
-        void add_item(void * item) {
-            ThreadPool_work_t * work_item = (ThreadPool_work_t *) item;
-            partition.push_back(*work_item);
-        }
+// // // This class will hold a single index of the partitions and handle their processing
+// class ReduceQueue: public DataStructure {
+//     private:
+//         std::vector<ThreadPool_work_t> partition;
+//     public:
+//         ReduceQueue(std::vector<ThreadPool_work_t> single_part_of_partition) {
+//             partition = single_part_of_partition;
+//         }
+//         void add_item(void * item) {
+//             ThreadPool_work_t * work_item = (ThreadPool_work_t *) item;
+//             partition.push_back(*work_item);
+//         }
 
-        void * get_item() {
-            return NULL;
-        }
+//         void * get_item() {
+//             return NULL;
+//         }
 
-        bool isEmpty() {
-            return partition.size() == 0;
-        }
+//         bool isEmpty() {
+//             return partition.size() == 0;
+//         }
 
-}; 
+// }; 
 
-typedef struct {  // Priority queue for the tasks
+struct ThreadPool_work_queue_t{  // Priority queue for the tasks
     // std::priority_queue<ThreadPool_work_t> max_heap;
     DataStructure *ds;
-} ThreadPool_work_queue_t;
+} ;
 
 typedef struct ThreadPool_t{ // This holds the idle threads
     std::vector<pthread_t> threads; // Vector of the threads of Either Map or Reduce
     ThreadPool_work_queue_t queue; // Priority Queue of items
     pthread_mutex_t mutex; // Want to make sure only one lock exists for the whole pool
     pthread_cond_t cond; // This is used as a conditional variable in the threadpool
+    int count = 0;
+    bool shutdown = false; // Not sure how this will work yet
 } ThreadPool_t;
 
 /**
@@ -124,7 +147,7 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg);
 * Return:
 *     ThreadPool_work_t* - The next task to run
 */
-ThreadPool_work_t *ThreadPool_get_work(ThreadPool_t *tp);
+ThreadPool_work_t ThreadPool_get_work(ThreadPool_t *tp);
 
 /**
 * Run the next task from the task queue
