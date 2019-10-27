@@ -45,12 +45,14 @@ void MR_Run(int num_files, char *filenames[],
     }
 
     map_pool.no_task_remaining = true; // All the tasks are added
-    pthread_cond_broadcast(&map_pool.notify);
+    pthread_cond_signal(&map_pool.notify); // Let the threads know its time to work
 
+    // Wait for the threads to finish --> dont go past this point until mapping is done
     for (unsigned int i = 0; i < map_pool.threads.size();i++) {
         pthread_join(map_pool.threads[i], NULL);
     }
     
+    // Destroy the mutex and the condition variable
     ThreadPool_destroy(&map_pool);
 
     // Create my reducer threads

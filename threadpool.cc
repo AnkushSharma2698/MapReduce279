@@ -81,9 +81,11 @@ void *Thread_run(ThreadPool_t *tp) {
         ThreadPool_args args = tp->queue.max_heap.top().arg;
         tp->queue.max_heap.pop(); // Returns void
         pthread_mutex_unlock(&(tp->mutex));
+        pthread_cond_signal(&tp->notify);
         function(args.filename);
     }
     pthread_mutex_unlock(&(tp->mutex));
+    pthread_cond_signal(&tp->notify);
     pthread_exit(NULL);
 
     return NULL;
