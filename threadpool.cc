@@ -77,8 +77,8 @@ void *Thread_run(ThreadPool_t *tp) {
         }
 
         // Grab the task 
-        thread_func_t function = tp->queue.max_heap.top().func;
-        ThreadPool_args args = tp->queue.max_heap.top().arg;
+        thread_func_t function = tp->queue.max_heap.top().func; // Get the function (MAP) 
+        ThreadPool_args args = tp->queue.max_heap.top().arg; // Args: (size, filname)
         tp->queue.max_heap.pop(); // Returns void
         pthread_mutex_unlock(&(tp->mutex));
         pthread_cond_signal(&tp->notify);
