@@ -14,7 +14,7 @@ typedef void (*thread_func_t)(void *arg);
 
 typedef struct ThreadPool_args{
     int size;
-    std::string filename;
+    char * filename;
     // Something else
 } ThreadPool_args;
 
@@ -99,17 +99,16 @@ class MapQueue: public DataStructure {
 // }; 
 
 struct ThreadPool_work_queue_t{  // Priority queue for the tasks
-    // std::priority_queue<ThreadPool_work_t> max_heap;
-    DataStructure *ds;
+     std::priority_queue<ThreadPool_work_t> max_heap;
+//    DataStructure *ds;
 } ;
 
 typedef struct ThreadPool_t{ // This holds the idle threads
     std::vector<pthread_t> threads; // Vector of the threads of Either Map or Reduce
     ThreadPool_work_queue_t queue; // Priority Queue of items
-    pthread_mutex_t mutex; // Want to make sure only one lock exists for the whole pool
-    pthread_cond_t cond; // This is used as a conditional variable in the threadpool
-    int count = 0;
-    bool shutdown = false; // Not sure how this will work yet
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Want to make sure only one lock exists for the whole pool
+    pthread_cond_t notify = PTHREAD_COND_INITIALIZER ; // This is used as a conditional variable in the threadpool
+    bool no_task_remaining = false;
 } ThreadPool_t;
 
 /**
@@ -147,7 +146,7 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg);
 * Return:
 *     ThreadPool_work_t* - The next task to run
 */
-ThreadPool_work_t ThreadPool_get_work(ThreadPool_t *tp);
+void * ThreadPool_get_work(ThreadPool_t *tp);
 
 /**
 * Run the next task from the task queue
