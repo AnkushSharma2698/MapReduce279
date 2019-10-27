@@ -9,7 +9,6 @@
 #include <iostream>
 
 void Map(char *file_name) {
-    std::cout << "Starting " << file_name << std::endl;
     FILE *fp = fopen(file_name, "r");
     assert(fp != NULL);
     char *line = NULL;
@@ -21,7 +20,6 @@ void Map(char *file_name) {
     }
     free(line);
     fclose(fp);
-    std::cout << "Ending: " << file_name << ", Total iteration: " << std::endl;
 }
 
 void Reduce(char *key, int partition_number) {

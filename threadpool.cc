@@ -30,7 +30,9 @@ void ThreadPool_create(ThreadPool_t &pool, int num) { // Expects an empty pool
     }
 }
 
+// Vectors destroy themselves so it should not create memory leaks
 void ThreadPool_destroy(ThreadPool_t *tp) {
+    // Make sure to destroy the locks and the condition variables
     pthread_mutex_destroy(&(tp->mutex));
     pthread_cond_destroy(&tp->notify);
 }
@@ -46,23 +48,12 @@ void ThreadPool_destroy(ThreadPool_t *tp) {
 *     false - Otherwise
 */
 bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
-
     ThreadPool_args * args = (ThreadPool_args *) arg;
     ThreadPool_work_t work_item;
     work_item.func = func;
     work_item.arg = *args;
     tp->queue.max_heap.push(work_item);
-}
-
-/**
-* Get a task from the given ThreadPool object
-* Parameters:
-*     tp - The ThreadPool object being passed
-* Return:
-*     ThreadPool_work_t* - The next task to run
-*/
-void * ThreadPool_get_work(ThreadPool_t *tp) {
-    return NULL;
+    return true;
 }
 
 /**

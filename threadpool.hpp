@@ -13,7 +13,7 @@ extern "C" {
 typedef void (*thread_func_t)(void *arg);
 
 typedef struct ThreadPool_args{
-    int size;
+    size_t size;
     char * filename;
     // Something else
 } ThreadPool_args;
@@ -27,80 +27,8 @@ typedef struct ThreadPool_work_t { // This is structure of a task that goes into
     }
 } ThreadPool_work_t;
 
-// Create 2 data structures
-class DataStructure {
-    public:
-        virtual void add_item(ThreadPool_work_t &item) {
-            
-        }
-        virtual ThreadPool_work_t get_item() {
-            ThreadPool_work_t a;
-            return a;
-        }
-        virtual bool isEmpty() {
-            return false;
-        }
-        virtual int getSize() {
-            return 0;
-        }
-        virtual void viewTop(){}
-};
-
-class MapQueue: public DataStructure {
-    private:
-        std::priority_queue<ThreadPool_work_t> max_heap;
-    public:
-        void add_item(ThreadPool_work_t &item) {
-            max_heap.push(item);
-            // free(work_item);
-        }
-
-        ThreadPool_work_t get_item() {
-            // return max_heap.pop();
-            ThreadPool_work_t item =  max_heap.top();
-            max_heap.pop();
-            return item;
-        }
-
-        void viewTop() {
-            std::cout << max_heap.top().arg.filename << '\n';
-        }
-
-        int getSize() {
-            return max_heap.size();
-        }
-
-        bool isEmpty() {
-            return max_heap.empty();
-        }
-};
-
-// // // This class will hold a single index of the partitions and handle their processing
-// class ReduceQueue: public DataStructure {
-//     private:
-//         std::vector<ThreadPool_work_t> partition;
-//     public:
-//         ReduceQueue(std::vector<ThreadPool_work_t> single_part_of_partition) {
-//             partition = single_part_of_partition;
-//         }
-//         void add_item(void * item) {
-//             ThreadPool_work_t * work_item = (ThreadPool_work_t *) item;
-//             partition.push_back(*work_item);
-//         }
-
-//         void * get_item() {
-//             return NULL;
-//         }
-
-//         bool isEmpty() {
-//             return partition.size() == 0;
-//         }
-
-// }; 
-
 struct ThreadPool_work_queue_t{  // Priority queue for the tasks
      std::priority_queue<ThreadPool_work_t> max_heap;
-//    DataStructure *ds;
 } ;
 
 typedef struct ThreadPool_t{ // This holds the idle threads
