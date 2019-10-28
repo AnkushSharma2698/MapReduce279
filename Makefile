@@ -9,7 +9,7 @@ compile:
 	$(CC) $(CFLAGS) -c mapreduce.cc -lpthread
 clean:
 	rm *.o
-	rm wc
+	rm ./wordcount
 
 compress:
-	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc mapreduce.hpp threadpool.hpp wordcount Makefile readme.md
+	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc mapreduce.hpp threadpool.hpp Makefile readme.md
