@@ -15,7 +15,6 @@ typedef void (*thread_func_t)(void *arg);
 typedef struct ThreadPool_args{
     size_t size;
     char * filename;
-    // Something else
 } ThreadPool_args;
 
 typedef struct ThreadPool_work_t { // This is structure of a task that goes into the PQ

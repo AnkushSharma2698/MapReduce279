@@ -58,7 +58,8 @@ void MR_Run(int num_files, char *filenames[],
     // Create my reducer threads
     vector<pthread_t> reduceThreads;
     reduceThreads.resize(num_reducers);
-
+    
+    // Run all of the reducer threads
     for (unsigned int i = 0; i < reduceThreads.size(); i++) {
         pthread_create(&reduceThreads[i], NULL, [](void * i) -> void * {
             MR_ProcessPartition((*(int *) i));
@@ -66,21 +67,25 @@ void MR_Run(int num_files, char *filenames[],
             }, new int(i));
     }
 
+    // Wait for the reducer threads to finish
     for (int i = 0; i < num_reducers; i++) {
         pthread_join(reduceThreads[i], NULL);
     }
 
+    // Destroy the lock for the partition
     pthread_mutex_destroy(&partition_lock);
 }
 
 void MR_Emit(char *key, char *value) {
+    // get the index of the partition this key,value pair will be assigned to 
     unsigned long partition_index = MR_Partition(key, partitions); // Which partition this key goes into
     string curr_key(key);
-    pthread_mutex_lock(&partition_lock);
+    pthread_mutex_lock(&partition_lock); // Lock the paritionDataStructure
     partitionDataStructure[partition_index].insert(multimap<string, int>::value_type(curr_key, (int)* value));
-    pthread_mutex_unlock(&partition_lock);
+    pthread_mutex_unlock(&partition_lock); // Unlock the paritionDataStructure
 }
 
+// This function is a hash function that assigns a key to a partition
 unsigned long MR_Partition(char *key, int num_partitions) {
     unsigned long hash = 5381;
     int c;
@@ -90,10 +95,11 @@ unsigned long MR_Partition(char *key, int num_partitions) {
     return hash % num_partitions;
 }
 
+// Process the partition given a partition number and provide number counts
 void MR_ProcessPartition(int partition_number) {
-    string curr_key;
-    multimap<string, int>::iterator it;
     while(!partitionDataStructure[partition_number].empty()) {
+        string curr_key;
+        multimap<string, int>::iterator it;
         // Get the first key
         it = partitionDataStructure[partition_number].begin();
         curr_key = it->first;
