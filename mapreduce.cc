@@ -11,10 +11,10 @@
 
 using namespace std;
 
-unsigned long partitions;
-std::vector<std::multimap<string, int>> partitionDataStructure;
-pthread_mutex_t partition_lock;
-Reducer reducer_func;
+unsigned long partitions; // Global variable to store the number of required partitions
+std::vector<std::multimap<string, int>> partitionDataStructure; // Data structure that will hold the key value pairs per partition
+pthread_mutex_t partition_lock; // Lock for accessing the partition Data structure to ensure there are no parallel writes 
+Reducer reducer_func; // Global handle on the reducer function so it doesnt have to be passed in as an argument (Making my  code work with the starter code)
 
 // function pointer types used by library functions
 void MR_Run(int num_files, char *filenames[],
@@ -25,9 +25,10 @@ void MR_Run(int num_files, char *filenames[],
     // Create the threadpool with the appropriate data structure needed
     ThreadPool_t map_pool;
 
+    // Specify the number of partitions and update the Global Data structure to conform to this configuration
     partitions = num_reducers;
     partitionDataStructure.resize(partitions);
-
+ 
     // std::cout << "Total files added: " << map_pool.queue.ds->getSize() << "\n";
     ThreadPool_create(map_pool, num_mappers);
 
@@ -54,7 +55,7 @@ void MR_Run(int num_files, char *filenames[],
     
     // Destroy the mutex and the condition variable
     ThreadPool_destroy(&map_pool);
-
+    
     // Create my reducer threads
     vector<pthread_t> reduceThreads;
     reduceThreads.resize(num_reducers);
@@ -63,15 +64,16 @@ void MR_Run(int num_files, char *filenames[],
     for (unsigned int i = 0; i < reduceThreads.size(); i++) {
         pthread_create(&reduceThreads[i], NULL, [](void * i) -> void * {
             MR_ProcessPartition((*(int *) i));
+	    delete (int *) i; 
             return NULL;
             }, new int(i));
-    }
-
+    } 
+   
     // Wait for the reducer threads to finish
     for (int i = 0; i < num_reducers; i++) {
         pthread_join(reduceThreads[i], NULL);
     }
-
+   
     // Destroy the lock for the partition
     pthread_mutex_destroy(&partition_lock);
 }

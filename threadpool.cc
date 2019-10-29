@@ -17,7 +17,6 @@
 typedef void* (*temp)(void *);
 void ThreadPool_create(ThreadPool_t &pool, int num) { // Expects an empty pool
     // Create the thread pool of size num
-    // The pool should also have locks for the
     pool.threads.resize(num);
     // Run the threads to do the cool stuff
     for (int i = 0; i < num; i++) {
@@ -64,14 +63,15 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
 void *Thread_run(ThreadPool_t *tp) {
     // Running the thread loop here
     while (true) {
+        // Critical section of the code
         pthread_mutex_lock(&(tp->mutex));
-
         // Wait on the condition variable
         while(!tp->no_task_remaining) {
             pthread_cond_wait(&(tp->notify), &(tp->mutex));
         }
 
-        // break condition
+        //If the threadpool priority queue is empty and there are no remaining
+	//tasks to be added to the queue, that means all threadpool work should be complete 
         if (tp->queue.max_heap.empty() && tp->no_task_remaining) {
             break;
         }
@@ -79,14 +79,14 @@ void *Thread_run(ThreadPool_t *tp) {
         // Grab the task 
         thread_func_t function = tp->queue.max_heap.top().func; // Get the function (MAP) 
         ThreadPool_args args = tp->queue.max_heap.top().arg; // Args: (size, filname)
-        tp->queue.max_heap.pop(); // Returns void
-        pthread_mutex_unlock(&(tp->mutex));
-        pthread_cond_signal(&tp->notify);
-        function(args.filename);
+        tp->queue.max_heap.pop(); //Removing from the top of the priority queue
+        pthread_mutex_unlock(&(tp->mutex)); //Unlocks the critical section so that another thread can now enter and do processing
+        pthread_cond_signal(&tp->notify); // Lets the next thread know that it can now access the critical section
+        function(args.filename); // Call the function that was specified in the Threadpool_work_t item, in this case Map
     }
-    pthread_mutex_unlock(&(tp->mutex));
-    pthread_cond_signal(&tp->notify);
-    pthread_exit(NULL);
+    pthread_mutex_unlock(&(tp->mutex)); // Unlock the critical section of the code in case threads are waiting to exit and the current thread broke on the specified condition
+    pthread_cond_signal(&tp->notify); // This notify exists so that if num threads > num jobs, it will signal those threads to continue and be able to exit
+    pthread_exit(NULL);// Handles cleanup for each thread
 
     return NULL;
 }
