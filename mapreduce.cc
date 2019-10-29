@@ -64,7 +64,7 @@ void MR_Run(int num_files, char *filenames[],
     for (unsigned int i = 0; i < reduceThreads.size(); i++) {
         pthread_create(&reduceThreads[i], NULL, [](void * i) -> void * {
             MR_ProcessPartition((*(int *) i));
-	    delete (int *) i; 
+	        delete (int *) i; 
             return NULL;
             }, new int(i));
     } 
