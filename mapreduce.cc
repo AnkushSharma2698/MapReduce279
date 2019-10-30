@@ -44,7 +44,6 @@ void MR_Run(int num_files, char *filenames[],
     
     // Create the thread pool to process the jobs created by the main thread
     ThreadPool_create(map_pool, num_mappers);
-    pthread_cond_signal(&map_pool.notify); // Let the threads know its time to work
 
     // Wait for the threads to finish --> dont go past this point until mapping is done
     for (unsigned int i = 0; i < map_pool.threads.size();i++) {

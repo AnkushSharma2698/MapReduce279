@@ -34,8 +34,6 @@ typedef struct ThreadPool_t{ // This holds the idle threads
     std::vector<pthread_t> threads; // Vector of the threads of Either Map or Reduce
     ThreadPool_work_queue_t queue; // Priority Queue of items
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Want to make sure only one lock exists for the whole pool
-    pthread_cond_t notify = PTHREAD_COND_INITIALIZER ; // This is used as a conditional variable in the threadpool
-    bool no_task_remaining = false;
 } ThreadPool_t;
 
 /**

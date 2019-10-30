@@ -33,7 +33,6 @@ void ThreadPool_create(ThreadPool_t &pool, int num) { // Expects an empty pool
 void ThreadPool_destroy(ThreadPool_t *tp) {
     // Make sure to destroy the locks and the condition variables
     pthread_mutex_destroy(&(tp->mutex));
-    pthread_cond_destroy(&tp->notify);
 }
 
 /**
@@ -77,11 +76,9 @@ void *Thread_run(ThreadPool_t *tp) {
         ThreadPool_args args = tp->queue.max_heap.top().arg; // Args: (size, filname)
         tp->queue.max_heap.pop(); //Removing from the top of the priority queue
         pthread_mutex_unlock(&(tp->mutex)); //Unlocks the critical section so that another thread can now enter and do processing
-        pthread_cond_signal(&tp->notify); // Lets the next thread know that it can now access the critical section
         function(args.filename); // Call the function that was specified in the Threadpool_work_t item, in this case Map
     }
     pthread_mutex_unlock(&(tp->mutex)); // Unlock the critical section of the code in case threads are waiting to exit and the current thread broke on the specified condition
-    pthread_cond_signal(&tp->notify); // This notify exists so that if num threads > num jobs, it will signal those threads to continue and be able to exit
     pthread_exit(NULL);// Handles cleanup for each thread
 
     return NULL;
