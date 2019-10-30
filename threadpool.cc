@@ -65,14 +65,10 @@ void *Thread_run(ThreadPool_t *tp) {
     while (true) {
         // Critical section of the code
         pthread_mutex_lock(&(tp->mutex));
-        // Wait on the condition variable
-        while(!tp->no_task_remaining) {
-            pthread_cond_wait(&(tp->notify), &(tp->mutex));
-        }
 
         //If the threadpool priority queue is empty and there are no remaining
 	//tasks to be added to the queue, that means all threadpool work should be complete 
-        if (tp->queue.max_heap.empty() && tp->no_task_remaining) {
+        if (tp->queue.max_heap.empty()) {
             break;
         }
 

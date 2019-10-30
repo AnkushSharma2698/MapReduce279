@@ -28,10 +28,7 @@ void MR_Run(int num_files, char *filenames[],
     // Specify the number of partitions and update the Global Data structure to conform to this configuration
     partitions = num_reducers;
     partitionDataStructure.resize(partitions);
- 
-    // std::cout << "Total files added: " << map_pool.queue.ds->getSize() << "\n";
-    ThreadPool_create(map_pool, num_mappers);
-
+    
     // Main Thread will add jobs to the queue for the mappers
     for (int i = 0; i < num_files; i++) {
         // Get the size of the file we are looking at
@@ -44,8 +41,9 @@ void MR_Run(int num_files, char *filenames[],
         // Add work item to the priority queue
         ThreadPool_add_work(&map_pool, (thread_func_t) map, &arg);
     }
-
-    map_pool.no_task_remaining = true; // All the tasks are added
+    
+    // Create the thread pool to process the jobs created by the main thread
+    ThreadPool_create(map_pool, num_mappers);
     pthread_cond_signal(&map_pool.notify); // Let the threads know its time to work
 
     // Wait for the threads to finish --> dont go past this point until mapping is done

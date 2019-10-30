@@ -25,7 +25,6 @@
 
 ### Synchronization Primitives
 - pthread_mutex_t was used to ensure that any access to the shared data structures was locked. This was used for both the partition and the priority queue.
-- pthread_cond_t was used to ensure that threads would idle when the data structure should not be accessed as well as get notified when a thread is done with the lock on a critical section.
 
 ### Tests of Correctness
 - To test correctness I utilized several print statements to see that files are running in the expected order in accordance with file size
