@@ -12,7 +12,7 @@
 using namespace std;
 
 unsigned long partitions; // Global variable to store the number of required partitions
-std::vector<std::multimap<string, int>> partitionDataStructure; // Data structure that will hold the key value pairs per partition
+std::vector<std::multimap<string, int> > partitionDataStructure; // Data structure that will hold the key value pairs per partition
 pthread_mutex_t partition_lock; // Lock for accessing the partition Data structure to ensure there are no parallel writes 
 Reducer reducer_func; // Global handle on the reducer function so it doesnt have to be passed in as an argument (Making my  code work with the starter code)
 
