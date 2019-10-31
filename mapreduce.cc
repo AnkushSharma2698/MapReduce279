@@ -1,5 +1,5 @@
-#include "mapreduce.hpp"
-#include "threadpool.hpp"
+#include "mapreduce.h"
+#include "threadpool.h"
 #include <assert.h>
 #include <stdio.h>
 #include <sys/stat.h>

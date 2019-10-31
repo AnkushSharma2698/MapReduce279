@@ -12,4 +12,4 @@ clean:
 	rm ./wordcount
 
 compress:
-	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc mapreduce.hpp threadpool.hpp Makefile readme.md
+	tar -czf mapreduce.tar.gz distwc.cc mapreduce.cc threadpool.cc mapreduce.h threadpool.h Makefile readme.md
