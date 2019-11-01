@@ -1,12 +1,12 @@
 CC = g++
-CFLAGS = -Wall -std=c++11
+CFLAGS = -Wall -Werror -std=c++11
 
 wc: compile
-	$(CC) $(CFLAGS) -o wordcount distwc.cc threadpool.o mapreduce.o -lpthread
+	$(CC) $(CFLAGS) -o wordcount distwc.cc threadpool.o mapreduce.o -pthread
 
 compile:
-	$(CC) $(CFLAGS) -c threadpool.cc -lpthread
-	$(CC) $(CFLAGS) -c mapreduce.cc -lpthread
+	$(CC) $(CFLAGS) -c threadpool.cc -pthread
+	$(CC) $(CFLAGS) -c mapreduce.cc -pthread
 clean:
 	rm *.o
 	rm ./wordcount
